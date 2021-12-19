@@ -39,13 +39,19 @@ imagesRouter.get(
   [
     query('width')
       .exists()
-      .withMessage('Image height must have a value.')
+      .withMessage('Image width must have a value.')
+      .not()
+      .equals('0')
+      .withMessage('Image width can not equal 0.')
       .toInt()
       .isInt({ max: 1000 })
       .withMessage('The max width should be 1000.'),
     query('height')
       .exists()
       .withMessage('Image height must have a value.')
+      .not()
+      .equals('0')
+      .withMessage('Image height can not equal 0.')
       .toInt()
       .isInt({ max: 1000 })
       .withMessage('The max height should be 1000.'),
