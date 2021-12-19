@@ -2,11 +2,10 @@ import express, { NextFunction, Request, Response } from 'express'
 import { query, ValidationError, validationResult } from 'express-validator'
 import { promises as fsPromises } from 'fs'
 import path from 'path'
-import sharp from 'sharp'
+import resizeImage from '../../controllers/resize-image.controller'
 import ApiError from '../../middleware/ApiError'
 // constants
 const images: string[] = ['fjord', 'encenadaport', 'palmtunnel', 'santamonica', 'icelandwaterfall']
-const imagePath: string = path.resolve(__dirname, '../../images')
 const imageThumbnailPath: string = path.resolve(__dirname, '../../images/thumbnails')
 
 // images Router
@@ -66,28 +65,33 @@ imagesRouter.get(
     const { width, height, filename } = req.query
     const thumbnailImage = `${imageThumbnailPath}/${filename}-${width}-${height}.jpg`
     const imageToRender = `${filename}-${width}-${height}.jpg`
-    // check if the thumbnails directory exist ( if not fs will create it )
-    await fsPromises.mkdir(imageThumbnailPath, { recursive: true })
 
-    // check if the image thumbnail already exists using the fs
-    const isFileExist = await fileExists(thumbnailImage)
+    try {
+      // check if the thumbnails directory exist ( if not fs will create it )
+      await fsPromises.mkdir(imageThumbnailPath, { recursive: true })
+      // check if the image thumbnail already exists using the fs
+      const isFileExist = await fileExists(thumbnailImage)
 
-    if (isFileExist) {
-      // Thumbnail image is there ( no need to create it )
-
-      console.log('image already exist')
-      res.render('index', { title: 'Image Already exists', image: imageToRender })
-    } else {
-      // Thumbnail image isn't there ( we have to create it )
-      // resize image using sharp
-
-      sharp(`${imagePath}/${filename}.jpg`)
-        .resize(Number(parseInt(width as string, 10)), Number(parseInt(height as string, 10)))
-        .toFile(thumbnailImage)
-        .then(() =>
-          res.render('index', { title: 'Hoooooray! a new image created.', image: imageToRender })
+      if (isFileExist) {
+        // Thumbnail image is there ( no need to create it )
+        console.log('image already exist')
+        res.render('index', { title: 'Image Already exists', image: imageToRender })
+      } else {
+        // Thumbnail image isn't there ( we have to create it )
+        // resize image using sharp
+        await resizeImage(
+          parseInt(width as string, 10),
+          parseInt(height as string, 10),
+          filename as string
         )
-        .catch((err) => next(ApiError.badRequest(err.message)))
+        res.render('index', { title: 'Hoooooray! a new image created.', image: imageToRender })
+      }
+    } catch (error: unknown) {
+      if (typeof error === 'string') {
+        next(ApiError.internal(error))
+      } else if (error instanceof Error) {
+        next(ApiError.internal(error.message))
+      }
     }
   }
 )

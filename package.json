@@ -4,7 +4,7 @@
   "description": "A simple image processing api created as a project for Udacity Advanced full-stack development track",
   "main": "index.js",
   "scripts": {
-    "test": "npx tsc && jasmine",
+    "test": "yarn clean && yarn copy && npx tsc && jasmine",
     "start:dev": "nodemon --watch \"./src/index.ts\" --exec \"npx ts-node src/index.ts\"",
     "clean": "rimraf build/",
     "build": "yarn clean && yarn copy && npx tsc",
