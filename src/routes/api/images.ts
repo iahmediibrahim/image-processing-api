@@ -27,7 +27,7 @@ const validateQueryParams = (req: Request, res: Response, next: NextFunction) =>
 }
 
 // returns a boolean in which the file path exists or not
-const fileExists = async (filePath: string) => !!await fsPromises.stat(filePath).catch((e) => false)
+const fileExists = async (filePath: string): Promise<boolean> => !!await fsPromises.stat(filePath).catch((e) => false)
 
 imagesRouter.get(
   '/',
@@ -51,7 +51,7 @@ imagesRouter.get(
       .withMessage('Image does not exist, please write a correct image name!')
   ],
   validateQueryParams,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { width, height, filename } = req.query
     const thumbnailImage = `${imageThumbnailPath}/${filename}-${width}-${height}.jpg`
     const imageToRender = `${filename}-${width}-${height}.jpg`
