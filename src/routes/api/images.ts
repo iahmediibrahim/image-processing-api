@@ -13,7 +13,11 @@ const imageThumbnailPath: string = path.resolve(__dirname, '../../images/thumbna
 const imagesRouter = express.Router()
 
 // using the default way of validating result from express validator and handle errors
-const validateQueryParams = (req: Request, res: Response, next: NextFunction) => {
+const validateQueryParams = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void | Response<string> => {
   // format error message
   const errorFormatter = ({ msg, param }: ValidationError) => `[${param}]: ${msg}`
   const errors = validationResult(req).formatWith(errorFormatter)

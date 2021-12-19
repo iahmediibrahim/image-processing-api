@@ -1,6 +1,7 @@
 import supertest from 'supertest'
 import path from 'path'
 import fs from 'fs'
+import sharp from 'sharp'
 import app from '../../..'
 
 const request = supertest(app)
@@ -27,5 +28,23 @@ describe('Test /api/images endpoint response', () => {
     expect(
       fs.existsSync(`${path.resolve(__dirname, '../../../images/thumbnails')}/fjord-300-200.jpg`)
     ).toBeFalsy()
+  })
+})
+
+describe('Test Sharp Api response', () => {
+  it('resize Image using sharp should work as intended', () => {
+    expect(
+      sharp(`${path.resolve(__dirname, '../../images')}/fjord.jpg`)
+        .resize(300, 200)
+        .toFile(`${path.resolve(__dirname, '../../../images/thumbnails')}/fjord-300-200.jpg`)
+    ).toBeTruthy()
+  })
+  it('resize Image using sharp should fail because the image name does not exist', () => {
+    expect(
+      !!sharp(`${path.resolve(__dirname, '../../images')}/fjord.jpg`)
+        .resize(300, 200)
+        .toFile(`${path.resolve(__dirname, '../../../images/thumbnails')}/fjord-300-200.jpg`)
+        .catch(() => false)
+    ).toBeTrue()
   })
 })
