@@ -27,7 +27,8 @@ const validateQueryParams = (req: Request, res: Response, next: NextFunction) =>
 }
 
 // returns a boolean in which the file path exists or not
-const fileExists = async (filePath: string): Promise<boolean> => !!await fsPromises.stat(filePath).catch((e) => false)
+const fileExists = async (filePath: string): Promise<boolean> =>
+  !!(await fsPromises.stat(filePath).catch(() => false))
 
 imagesRouter.get(
   '/',
@@ -73,7 +74,9 @@ imagesRouter.get(
       sharp(`${imagePath}/${filename}.jpg`)
         .resize(Number(parseInt(width as string, 10)), Number(parseInt(height as string, 10)))
         .toFile(thumbnailImage)
-        .then(() => res.render('index', { title: 'Hoooooray! a new image created.', image: imageToRender }))
+        .then(() =>
+          res.render('index', { title: 'Hoooooray! a new image created.', image: imageToRender })
+        )
         .catch((err) => next(ApiError.badRequest(err.message)))
     }
   }

@@ -19,9 +19,13 @@ describe('Test /api/images endpoint response', () => {
     expect(response.status).toBe(200)
   })
   it('Images already resized should exist', () => {
-    expect(fs.existsSync(`${path.resolve(__dirname, '../../../images/thumbnails')}/fjord-600-500.jpg`)).toBeTruthy()
+    expect(
+      fs.existsSync(`${path.resolve(__dirname, '../../../images/thumbnails')}/fjord-600-500.jpg`)
+    ).toBeTruthy()
   })
   it('Images with same name but new width and height should not exist', () => {
-    expect(fs.existsSync(`${path.resolve(__dirname, '../../../images/thumbnails')}/fjord-300-200.jpg`)).toBeFalsy()
+    expect(
+      fs.existsSync(`${path.resolve(__dirname, '../../../images/thumbnails')}/fjord-300-200.jpg`)
+    ).toBeFalsy()
   })
 })
