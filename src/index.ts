@@ -13,7 +13,6 @@ const PORT = process.env.PORT || 3000
 const app: Application = express()
 
 app.use('/images', express.static(path.join(__dirname, 'images')))
-app.use(express.static('images'))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
